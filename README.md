@@ -1,10 +1,10 @@
-# 🚨 AI Incident Response Agent
+# AI Incident Response Agent
 
 A production-ready AI agent that helps engineering teams investigate and respond to production incidents by analyzing service logs and runbook documentation using **LangGraph orchestration + Retrieval Augmented Generation (RAG)**.
 
 ---
 
-## 🌟 Why this project exists
+## Why this project exists
 
 During incidents, engineers spend valuable time searching logs, dashboards, and runbooks to understand what went wrong.
 
@@ -20,15 +20,15 @@ The agent can:
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 High level workflow:
 
 User query or logs  
-➡️ LangGraph orchestration  
-➡️ RAG pipeline retrieves relevant logs and runbooks from pgvector  
-➡️ LLM reasoning with tools and memory  
-➡️ Structured incident response  
+- LangGraph orchestration  
+- RAG pipeline retrieves relevant logs and runbooks from pgvector  
+- LLM reasoning with tools and memory  
+- Structured incident response  
 
 Core stack:
 
@@ -42,9 +42,9 @@ Core stack:
 
 ---
 
-## 🤖 Key Features
+## Key Features
 
-### 🔎 Incident Investigation Agent
+### Incident Investigation Agent
 
 • Upload logs or paste incident details  
 • Semantic search across runbooks and past incidents  
@@ -54,7 +54,7 @@ Core stack:
 
 ---
 
-### 🧠 Retrieval Augmented Generation Pipeline
+### Retrieval Augmented Generation Pipeline
 
 This project uses a full RAG pipeline to ground responses in real engineering knowledge.
 
@@ -66,7 +66,7 @@ This project uses a full RAG pipeline to ground responses in real engineering kn
 
 ---
 
-### ⚙️ Production Backend
+### Production Backend
 
 • FastAPI async REST API  
 • JWT authentication and session management  
@@ -76,7 +76,7 @@ This project uses a full RAG pipeline to ground responses in real engineering kn
 
 ---
 
-### 📊 Observability & Evaluation
+### Observability & Evaluation
 
 • Prometheus metrics + Grafana dashboards  
 • Langfuse LLM tracing  
@@ -85,7 +85,7 @@ This project uses a full RAG pipeline to ground responses in real engineering kn
 
 ---
 
-### ⚡ Performance & Reliability
+### Performance & Reliability
 
 • Docker + Docker Compose setup  
 • Redis caching support  
@@ -94,7 +94,7 @@ This project uses a full RAG pipeline to ground responses in real engineering kn
 
 ---
 
-## 💡 Example Use Cases
+## Example Use Cases
 
 Example queries:
 
@@ -106,7 +106,7 @@ The agent retrieves relevant runbook sections and produces structured troublesho
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 app/
@@ -125,7 +125,7 @@ grafana/                 # Monitoring dashboards
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -136,12 +136,12 @@ grafana/                 # Monitoring dashboards
 
 ---
 
-### 🔧 Local Setup
+### Local Setup
 
 Clone the repo
 
 ```
-git clone https://github.com/your-username/ai-incident-response-agent.git
+git clone https://github.com/neehanayak/ai-incident-response-agent.git
 cd ai-incident-response-agent
 ```
 
@@ -177,7 +177,7 @@ http://localhost:8000/docs
 
 ---
 
-## 🐳 Run with Docker
+## Run with Docker
 
 ```
 make docker-build-env ENV=development
@@ -191,7 +191,7 @@ Grafana → http://localhost:3000
 
 ---
 
-## 🧪 Evaluation
+## Evaluation
 
 Run automated evaluation
 
@@ -209,7 +209,7 @@ Metrics include success rate and response quality.
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 • Cloud log ingestion integrations  
 • Slack and email alerting support  
@@ -218,6 +218,6 @@ Metrics include success rate and response quality.
 
 ---
 
-## 🙌 Acknowledgements
+##  Acknowledgements
 
 Built using a production FastAPI + LangGraph template and extended with a real-world incident response use case.
