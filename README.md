@@ -1,223 +1,129 @@
 # AI Incident Response Agent
-
-A production-ready AI agent that helps engineering teams investigate and respond to production incidents by analyzing service logs and runbook documentation using **LangGraph orchestration + Retrieval Augmented Generation (RAG)**.
-
+ 
+An automated AI agent that triages, analyzes, and mitigates infrastructure incidents. Built with **FastAPI**, **LangGraph**, and **SQLAlchemy**, and evaluated using an **LLM-as-a-judge** framework powered by Langfuse.
+ 
 ---
-
-## Why this project exists
-
-During incidents, engineers spend valuable time searching logs, dashboards, and runbooks to understand what went wrong.
-
-This system acts as an **AI copilot for incident response**, helping reduce time to diagnose and improve troubleshooting accuracy.
-
-The agent can:
-
-• Analyze service logs and error traces  
-• Retrieve relevant runbook documentation  
-• Suggest likely root causes  
-• Recommend next debugging steps  
-• Maintain conversation memory across sessions  
-
+ 
+## Table of Contents
+ 
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [1. Environment Setup](#1-environment-setup)
+  - [2. Install Dependencies](#2-install-dependencies)
+  - [3. Start the Database](#3-start-the-database)
+  - [4. Run the Application](#4-run-the-application)
+- [Evaluation & Metrics](#evaluation--metrics)
+  - [Core Metrics](#core-metrics)
+  - [Running Evaluations](#running-evaluations)
+- [Tech Stack](#tech-stack)
 ---
-
-## Architecture Overview
-
-High level workflow:
-
-User query or logs  
-- LangGraph orchestration  
-- RAG pipeline retrieves relevant logs and runbooks from pgvector  
-- LLM reasoning with tools and memory  
-- Structured incident response  
-
-Core stack:
-
-• **FastAPI** for async API backend  
-• **LangGraph** for agent orchestration  
-• **PostgreSQL + pgvector** for vector search  
-• **OpenAI models** for reasoning and embeddings  
-• **Prometheus + Grafana** for monitoring  
-• **Docker** for containerization  
-• **AWS ready deployment**
-
+ 
+## Prerequisites
+ 
+Ensure the following are installed on your Windows machine before getting started:
+ 
+| Tool | Purpose |
+|---|---|
+| [Python 3.11+](https://www.python.org/downloads/) | Runtime |
+| [Poetry](https://python-poetry.org/docs/#installation) | Dependency management |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Runs the PostgreSQL database |
+ 
 ---
-
-## Key Features
-
-### Incident Investigation Agent
-
-• Upload logs or paste incident details  
-• Semantic search across runbooks and past incidents  
-• Root cause analysis suggestions  
-• Recommended debugging steps  
-• Conversation memory per user  
-
----
-
-### Retrieval Augmented Generation Pipeline
-
-This project uses a full RAG pipeline to ground responses in real engineering knowledge.
-
-• Log ingestion and chunking pipeline  
-• Document ingestion pipeline for runbooks  
-• Embedding generation using OpenAI models  
-• Vector similarity search with PostgreSQL + pgvector  
-• Context injection into LLM prompts for grounded reasoning
-
----
-
-### Production Backend
-
-• FastAPI async REST API  
-• JWT authentication and session management  
-• Rate limiting and input validation  
-• Structured logging with request context  
-• Streaming responses support  
-
----
-
-### Observability & Evaluation
-
-• Prometheus metrics + Grafana dashboards  
-• Langfuse LLM tracing  
-• Automated evaluation framework  
-• JSON reports with success metrics  
-
----
-
-### Performance & Reliability
-
-• Docker + Docker Compose setup  
-• Redis caching support  
-• Automatic retry logic for LLM calls  
-• Async database connection pooling  
-
----
-
-## Example Use Cases
-
-Example queries:
-
-• “Here are logs from the payment service. Why is checkout failing?”  
-• “We are seeing repeated 503 errors. What could be wrong?”  
-• “Summarize this incident and suggest next steps.”
-
-The agent retrieves relevant runbook sections and produces structured troubleshooting guidance.
-
----
-
-## Project Structure
-
-```
-app/
- ├── api/                # REST API endpoints (auth + chat)
- ├── core/langgraph/     # LangGraph agent workflow & tools
- ├── services/
- │     ├── database.py   # PostgreSQL + pgvector integration
- │     └── llm.py        # LLM + embedding service
- ├── prompts/            # System prompts & RAG instructions
-
-scripts/                 # Log + runbook ingestion pipeline (RAG indexing)
-evals/                   # Evaluation framework for agent accuracy
-prometheus/              # Metrics configuration
-grafana/                 # Monitoring dashboards
-```
-
----
-
+ 
 ## Getting Started
-
-### Prerequisites
-
-• Python 3.13  
-• PostgreSQL  
-• Docker + Docker Compose  
-• OpenAI API Key  
-
+ 
+### 1. Environment Setup
+ 
+This project uses **split environment files**. Because Docker Compose and the FastAPI app resolve file paths differently on Windows, you must maintain **both** `.env` and `.env.development` in the project root with identical database credentials.
+ 
+Create both files and populate them as follows:
+ 
+```env
+# Database
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
+POSTGRES_DB=mydb
+POSTGRES_USER=myuser
+POSTGRES_PASSWORD=mypassword
+ 
+# Application
+ENV=development
+OPENAI_API_KEY=your_openai_api_key_here
+LANGFUSE_PUBLIC_KEY=your_langfuse_public_key_here
+LANGFUSE_SECRET_KEY=your_langfuse_secret_key_here
+LANGFUSE_HOST=https://us.cloud.langfuse.com
+```
+ 
+> **Note:** Never commit these files to version control. Ensure `.env` and `.env.development` are listed in your `.gitignore`.
+ 
 ---
-
-### Local Setup
-
-Clone the repo
-
+ 
+### 2. Install Dependencies
+ 
+```cmd
+poetry install
 ```
-git clone https://github.com/neehanayak/ai-incident-response-agent.git
-cd ai-incident-response-agent
-```
-
-Install dependencies
-
-```
-uv sync
-```
-
-Create environment file
-
-```
-cp .env.example .env.development
-```
-
-Add required variables
-
-```
-OPENAI_API_KEY=your_key
-POSTGRES_HOST=localhost
-POSTGRES_DB=incident_agent
-SECRET_KEY=your_secret
-```
-
-Run locally
-
-```
-make dev
-```
-
-Swagger docs available at  
-http://localhost:8000/docs
-
+ 
 ---
-
-## Run with Docker
-
+ 
+### 3. Start the Database
+ 
+Make sure Docker Desktop is running, then spin up the PostgreSQL container:
+ 
+```cmd
+docker-compose down
+docker-compose up -d db
 ```
-make docker-build-env ENV=development
-make docker-run-env ENV=development
-```
-
-Monitoring dashboards
-
-Prometheus → http://localhost:9090  
-Grafana → http://localhost:3000  
-
+ 
 ---
-
-## Evaluation
-
-Run automated evaluation
-
+ 
+### 4. Run the Application
+ 
+Start the FastAPI development server:
+ 
+```cmd
+poetry run uvicorn app.main:app --reload
 ```
-make eval-quick ENV=development
-```
-
-Reports generated in:
-
-```
-evals/reports/
-```
-
-Metrics include success rate and response quality.
-
+ 
+Once running, the interactive API documentation (Swagger UI) is available at:
+ 
+**http://127.0.0.1:8000/docs**
+ 
 ---
-
-## Future Improvements
-
-• Cloud log ingestion integrations  
-• Slack and email alerting support  
-• Larger evaluation datasets  
-• Advanced multi-step agent workflows  
-
+ 
+## Evaluation & Metrics
+ 
+The project includes an **LLM-as-a-judge** evaluation suite powered by [Langfuse](https://langfuse.com) to monitor and grade agent response quality over time.
+ 
+### Core Metrics
+ 
+| Metric | Description |
+|---|---|
+| **Conciseness** | Checks that the agent responds without unnecessary rambling |
+| **Hallucination** | Detects fabricated system logs or non-existent errors |
+| **Helpfulness** | Verifies that mitigation steps are clear and actionable |
+| **Relevancy** | Confirms the response directly addresses the reported incident |
+| **Toxicity** | Flags unsafe or unprofessional language |
+ 
+### Running Evaluations
+ 
+> **Before running evals**, send a few test messages through the `/api/v1/chat` endpoint in Swagger UI to populate your Langfuse dashboard with interaction traces.
+ 
+Since `make` is not natively available on Windows, run the evaluation module directly:
+ 
+```cmd
+set ENV=development&& poetry run python evals/main.py --quick
+```
+ 
+The evaluation script retrieves real historical traces from Langfuse and grades them against the metrics above.
+ 
 ---
-
-##  Acknowledgements
-
-Built using a production FastAPI + LangGraph template and extended with a real-world incident response use case.
+ 
+## Tech Stack
+ 
+- **[FastAPI](https://fastapi.tiangolo.com/)** — API framework
+- **[LangGraph](https://langchain-ai.github.io/langgraph/)** — Agent orchestration
+- **[SQLAlchemy](https://www.sqlalchemy.org/)** — ORM and database management
+- **[PostgreSQL](https://www.postgresql.org/)** — Primary data store (via Docker)
+- **[Langfuse](https://langfuse.com/)** — LLM observability and evaluation
+- **[Poetry](https://python-poetry.org/)** — Python dependency management
